@@ -194,8 +194,10 @@
       padding:8px 16px;border-radius:6px;font-weight:900;
       font-size:.72rem;letter-spacing:1px;text-transform:uppercase;
     }
-    .cert-r{color:#ff5555;border:2px solid #ff5555;box-shadow:0 0 10px rgba(255,85,85,.25)}
-    .cert-g{color:var(--gb);border:2px solid var(--gb);box-shadow:0 0 10px rgba(0,230,118,.25)}
+    .cert-r{color:#ff5555;border:2px solid #ff5555;animation:cpr 2.5s ease-in-out infinite}
+    .cert-g{color:var(--gb);border:2px solid var(--gb);animation:cpg 2.5s ease-in-out infinite .7s}
+    @keyframes cpr{0%,100%{box-shadow:0 0 10px rgba(255,85,85,.25)}50%{box-shadow:0 0 25px rgba(255,85,85,.7),0 0 50px rgba(255,85,85,.25)}}
+    @keyframes cpg{0%,100%{box-shadow:0 0 10px rgba(0,230,118,.25)}50%{box-shadow:0 0 25px rgba(0,230,118,.7),0 0 50px rgba(0,230,118,.25)}}
 
     .h-addr{
       font-size:clamp(.72rem,1.4vw,.88rem);color:rgba(255,255,255,.6);
