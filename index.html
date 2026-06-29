@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lotus Family Group Daycare | Denise Capellan | Bronx, NY</title>
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    /* ── Variables ── */
+    :root{
+      --y:#FFD700; --yd:#b8860b; --r:#CC0000; --rb:#FF3333;
+      --teal:#00BCD4; --g:#4CAF50; --gb:#00E676;
+      --dk:#0f0f1e; --dkk:#07070f; --chalk:#f0ebe0;
+      --w:#fff; --sh:rgba(0,0,0,.5);
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{font-family:'Nunito',sans-serif;background:var(--dk);color:var(--w);overflow-x:hidden}
+
+    /* ── BG Canvas ── */
+    #bgc{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-track{background:var(--dkk)}
+    ::-webkit-scrollbar-thumb{background:var(--y);border-radius:3px}
+
+    /* ════════════════════════════
+       NAVIGATION
+    ════════════════════════════ */
+    #nav{
+      position:fixed;top:0;width:100%;z-index:1000;
+      padding:0 40px;height:68px;
+      display:flex;align-items:center;justify-content:space-between;
+      background:rgba(7,7,15,.9);backdrop-filter:blur(18px);
+      border-bottom:2px solid rgba(255,215,0,.35);
+      transition:all .3s;
+    }
+    #nav.stuck{
+      background:rgba(7,7,15,.97);border-bottom-color:var(--y);
+      box-shadow:0 4px 30px rgba(255,215,0,.18);
+    }
+    .n-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .n-brand svg{width:36px;height:36px}
+    .n-title{
+      font-family:'Fredoka One',cursive;font-size:1.45rem;color:var(--y);
+      text-shadow:2px 2px 4px #000;
+    }
+    .n-title sub{font-size:.65rem;color:rgba(255,255,255,.6);vertical-align:bottom;font-family:'Nunito',sans-serif}
+    .n-links{display:flex;list-style:none;gap:4px;align-items:center}
+    .n-links a{
+      color:rgba(255,255,255,.8);text-decoration:none;font-weight:700;
+      font-size:.85rem;padding:7px 13px;border-radius:20px;
+      transition:all .3s;text-transform:uppercase;letter-spacing:.5px;
+    }
+    .n-links a:hover{color:var(--y);background:rgba(255,215,0,.1)}
+    .n-cta{background:var(--y)!important;color:var(--dk)!important;font-weight:900!important;box-shadow:0 4px 14px rgba(255,215,0,.3)}
+    .n-cta:hover{background:var(--w)!important;box-shadow:0 6px 20px rgba(255,255,255,.25)!important}
+    .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:5px}
+    .burger span{display:block;width:24px;height:3px;background:var(--y);border-radius:3px;transition:all .3s}
+    .mob-menu{
+      display:none;position:fixed;top:68px;left:0;right:0;z-index:999;
+      background:rgba(7,7,15,.97);backdrop-filter:blur(20px);
+      border-bottom:2px solid var(--y);
+      padding:20px 40px 30px;
+    }
+    .mob-menu.open{display:block}
+    .mob-menu ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+    .mob-menu a{display:block;padding:12px 16px;color:var(--w);text-decoration:none;font-weight:700;border-radius:10px;transition:all .3s;font-size:1rem}
+    .mob-menu a:hover{background:rgba(255,215,0,.1);color:var(--y)}
+
+    /* ════════════════════════════
+       HERO
+    ════════════════════════════ */
+    #hero{
+      min-height:100vh;position:relative;
+      display:flex;align-items:center;justify-content:center;
+      overflow:hidden;padding-top:68px;
+    }
+    .cb-bg{
+      position:absolute;inset:0;
+      background:radial-gradient(ellipse at 50% 45%, #262640 0%, #0a0a18 65%);
+    }
+    /* chalk grid */
+    .cb-bg::before{
+      content:'';position:absolute;inset:0;
+      background:
+        repeating-linear-gradient(0deg,transparent 0,transparent 28px,rgba(255,255,255,.016) 28px,rgba(255,255,255,.016) 29px),
+        repeating-linear-gradient(90deg,transparent 0,transparent 28px,rgba(255,255,255,.007) 28px,rgba(255,255,255,.007) 29px);
+    }
+    /* red frame */
+    .h-frame{
+      position:absolute;inset:14px;border:5px solid var(--r);border-radius:6px;
+      pointer-events:none;z-index:3;
+      box-shadow:inset 0 0 30px rgba(204,0,0,.18),0 0 40px rgba(204,0,0,.25);
+    }
+    /* teal side bars */
+    .h-bar-l,.h-bar-r{
+      position:absolute;top:19px;bottom:19px;width:9px;z-index:4;
+      background:linear-gradient(180deg,var(--teal),#0077aa,var(--teal));
+    }
+    .h-bar-l{left:19px}
+    .h-bar-r{right:19px}
+
+    /* ── MAIN HERO CONTENT ── */
+    .h-main{
+      position:relative;z-index:10;text-align:center;
+      padding:20px 30px;max-width:760px;
+    }
+    .h-lotus-wrap{display:flex;justify-content:center;margin-bottom:4px}
+    .h-lotus{width:78px;height:78px;animation:lotFloat 4s ease-in-out infinite,lotGlow 3s ease-in-out infinite}
+    @keyframes lotFloat{
+      0%,100%{transform:translateY(0) rotate(0deg)}
+      33%{transform:translateY(-14px) rotate(3deg)}
+      66%{transform:translateY(-9px) rotate(-2deg)}
+    }
+    @keyframes lotGlow{
+      0%,100%{filter:drop-shadow(0 0 10px rgba(255,215,0,.6)) drop-shadow(0 0 22px rgba(255,215,0,.25))}
+      50%{filter:drop-shadow(0 0 18px rgba(255,215,0,1)) drop-shadow(0 0 45px rgba(255,215,0,.55))}
+    }
+
+    /* 3D text */
+    .h-big{
+      font-family:'Fredoka One',cursive;
+      font-size:clamp(4.5rem,13vw,9.5rem);
+      color:var(--y);line-height:.88;letter-spacing:6px;
+      text-shadow:
+        1px 1px 0 #d4a000,2px 2px 0 #c89500,
+        3px 3px 0 #bc8a00,4px 4px 0 #b07f00,
+        5px 5px 0 #a47400,6px 6px 0 #986900,
+        7px 7px 0 #8c5e00,8px 8px 0 rgba(0,0,0,.35),
+        14px 14px 28px rgba(0,0,0,.6);
+      opacity:0;transform:translateY(50px) scale(.85);
+      transition:opacity .9s cubic-bezier(.175,.885,.32,1.275),transform .9s cubic-bezier(.175,.885,.32,1.275);
+    }
+    .h-big.go{opacity:1;transform:translateY(0) scale(1)}
+
+    .h-sub{
+      font-family:'Fredoka One',cursive;
+      font-size:clamp(1.1rem,3.5vw,2.4rem);
+      color:var(--w);letter-spacing:3px;
+      text-shadow:2px 2px 12px rgba(0,0,0,.8);
+      opacity:0;transform:translateY(20px);
+      transition:opacity .7s ease .3s,transform .7s ease .3s;
+    }
+    .h-sub.go{opacity:1;transform:translateY(0)}
+
+    .h-owner{
+      font-size:clamp(.95rem,2.2vw,1.5rem);color:var(--chalk);
+      font-weight:800;margin-top:12px;
+      text-shadow:1px 1px 6px rgba(0,0,0,.9);
+      opacity:0;transition:opacity .6s ease .5s;
+    }
+    .h-owner.go{opacity:1}
+    .h-owner .hl{color:var(--y);font-family:'Caveat',cursive;font-size:1.25em}
+    .h-owner .role{color:rgba(255,255,255,.55);font-size:.72em;font-weight:600}
+
+    .h-phone{
+      font-family:'Fredoka One',cursive;
+      font-size:clamp(1.3rem,3.5vw,2rem);color:var(--w);
+      margin-top:10px;opacity:0;transition:opacity .6s ease .65s;
+    }
+    .h-phone.go{opacity:1}
+    .h-phone a{color:var(--w);text-decoration:none;transition:color .3s}
+    .h-phone a:hover{color:var(--y)}
+
+    .h-feats{
+      display:flex;flex-direction:column;gap:4px;
+      margin:14px 0;opacity:0;transition:opacity .6s ease .78s;
+    }
+    .h-feats.go{opacity:1}
+    .h-feats p{
+      font-family:'Caveat',cursive;
+      font-size:clamp(.95rem,2vw,1.25rem);
+      color:var(--chalk);text-shadow:1px 1px 6px rgba(0,0,0,.8);font-weight:600;
+    }
+
+    .h-certs{
+      display:flex;justify-content:center;gap:14px;margin:12px 0;
+      flex-wrap:wrap;opacity:0;transition:opacity .6s ease .9s;
+    }
+    .h-certs.go{opacity:1}
+    .cert{
+      padding:8px 16px;border-radius:6px;font-weight:900;
+      font-size:.72rem;letter-spacing:1px;text-transform:uppercase;
+    }
+    .cert-r{color:#ff5555;border:2px solid #ff5555;box-shadow:0 0 10px rgba(255,85,85,.25)}
+    .cert-g{color:var(--gb);border:2px solid var(--gb);box-shadow:0 0 10px rgba(0,230,118,.25)}
+
+    .h-addr{
+      font-size:clamp(.72rem,1.4vw,.88rem);color:rgba(255,255,255,.6);
+      font-weight:600;margin-top:6px;
+    }
+    .h-btns{
+      display:flex;justify-content:center;gap:12px;flex-wrap:wrap;
+      margin-top:16px;opacity:0;transition:opacity .6s ease 1.05s;
+    }
+    .h-btns.go{opacity:1}
+    .btn-p{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:13px 34px;background:var(--y);color:var(--dk);
+      font-family:'Fredoka One',cursive;font-size:1.05rem;
+      border-radius:50px;text-decoration:none;
+      transition:all .3s;box-shadow:0 6px 25px rgba(255,215,0,.4);
+      animation:bpulse 3s ease-in-out 2.5s infinite;
+    }
+    @keyframes bpulse{
+      0%,100%{box-shadow:0 6px 25px rgba(255,215,0,.4)}
+      50%{box-shadow:0 8px 35px rgba(255,215,0,.7),0 0 0 8px rgba(255,215,0,.08)}
+    }
+    .btn-p:hover{background:var(--w);transform:translateY(-4px) scale(1.04);box-shadow:0 14px 35px rgba(255,215,0,.55)}
+    .btn-s{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:13px 34px;background:transparent;color:var(--w);
+      font-family:'Fredoka One',cursive;font-size:1.05rem;
+      border-radius:50px;text-decoration:none;
+      border:2px solid rgba(255,255,255,.45);transition:all .3s;
+    }
+    .btn-s:hover{background:rgba(255,255,255,.08);border-color:var(--w);transform:translateY(-4px)}
+
+    /* scroll indicator */
+    .scroll-ind{
+      position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+      z-index:10;animation:bonce 2s ease-in-out infinite;
+    }
+    .scroll-ind span{
+      display:block;width:24px;height:40px;
+      border:2px solid rgba(255,215,0,.5);border-radius:12px;position:relative;
+    }
+    .scroll-ind span::before{
+      content:'';position:absolute;top:6px;left:50%;transform:translateX(-50%);
+      width:4px;height:8px;background:var(--y);border-radius:2px;
+      animation:sdot 2s ease-in-out infinite;
+    }
+    @keyframes sdot{0%,100%{top:6px;opacity:1}50%{top:22px;opacity:.4}}
+    @keyframes bonce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-8px)}}
+
+    /* ── CHARACTERS ── */
+    .char-l{
+      position:absolute;left:0;bottom:0;
+      width:clamp(130px,17vw,270px);z-index:8;
+      animation:catfloat 4s ease-in-out infinite;transform-origin:bottom;
+      filter:drop-shadow(6px 0 20px rgba(0,0,0,.55));
+    }
+    .char-r{
+      position:absolute;right:0;bottom:0;
+      width:clamp(140px,19vw,290px);z-index:8;
+      animation:thingfloat 3.5s ease-in-out infinite .6s;transform-origin:bottom;
+      filter:drop-shadow(-6px 0 20px rgba(0,0,0,.55));
+    }
+    @keyframes catfloat{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-20px) rotate(1.5deg)}}
+    @keyframes thingfloat{0%,100%{transform:translateY(0) rotate(1.5deg)}50%{transform:translateY(-24px) rotate(-1.5deg)}}
+
+    /* ── ABC BLOCKS ── */
+    .abc-wrap{
+      position:absolute;top:88px;right:clamp(150px,20vw,310px);
+      display:flex;gap:7px;z-index:9;perspective:700px;
+    }
+    .cube{width:58px;height:58px;position:relative;transform-style:preserve-3d}
+    .cube:nth-child(1){animation:sA 7s linear infinite}
+    .cube:nth-child(2){animation:sB 9s linear infinite reverse;margin-top:12px}
+    .cube:nth-child(3){animation:sC 6s linear infinite}
+    @keyframes sA{to{transform:rotateX(360deg) rotateY(540deg) rotateZ(180deg)}}
+    @keyframes sB{0%{transform:rotateX(15deg) rotateY(30deg) rotateZ(0deg)}to{transform:rotateX(375deg) rotateY(390deg) rotateZ(360deg)}}
+    @keyframes sC{to{transform:rotateX(360deg) rotateY(-360deg) rotateZ(360deg)}}
+    .cf{
+      position:absolute;width:58px;height:58px;
+      border:3px solid rgba(255,255,255,.85);
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Fredoka One',cursive;font-size:1.9rem;
+      color:#fff;text-shadow:1px 1px 4px rgba(0,0,0,.7);
+    }
+    .ca .cf{background:rgba(204,0,0,.92)}
+    .cb .cf{background:rgba(0,80,200,.92)}
+    .cc .cf{background:rgba(0,140,50,.92)}
+    .f-fr{transform:rotateY(0deg)   translateZ(29px)}
+    .f-bk{transform:rotateY(180deg) translateZ(29px)}
+    .f-ri{transform:rotateY(90deg)  translateZ(29px)}
+    .f-le{transform:rotateY(-90deg) translateZ(29px)}
+    .f-tp{transform:rotateX(90deg)  translateZ(29px)}
+    .f-bt{transform:rotateX(-90deg) translateZ(29px)}
+
+    /* ════════════════════════════
+       SHARED SECTION STYLES
+    ════════════════════════════ */
+    section{position:relative;z-index:1}
+    .wrap{max-width:1180px;margin:0 auto;padding:0 40px}
+    .s-head{text-align:center;margin-bottom:55px}
+    .s-tag{
+      display:inline-block;
+      background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.38);
+      color:var(--y);padding:5px 16px;border-radius:20px;
+      font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;
+    }
+    .s-title{
+      font-family:'Fredoka One',cursive;
+      font-size:clamp(1.9rem,4.5vw,3.2rem);color:var(--w);
+      text-shadow:3px 3px 10px rgba(0,0,0,.45);
+    }
+    .s-title .ac{color:var(--y)}
+    .s-desc{margin-top:14px;color:rgba(255,255,255,.65);font-size:1rem;max-width:580px;margin-inline:auto;line-height:1.7}
+
+    /* ════════════════════════════
+       ABOUT
+    ════════════════════════════ */
+    #about{padding:100px 0;background:linear-gradient(180deg,rgba(13,13,26,0) 0%,rgba(18,18,36,1) 15%,rgba(18,18,36,1) 85%,rgba(13,13,26,0) 100%)}
+    .about-g{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+    .about-card{
+      background:linear-gradient(135deg,rgba(255,215,0,.1) 0%,rgba(0,188,212,.07) 100%);
+      border:1px solid rgba(255,215,0,.25);border-radius:22px;padding:38px;text-align:center;
+      transform:perspective(900px) rotateY(-6deg);transition:transform .5s;
+      box-shadow:16px 16px 45px rgba(0,0,0,.45),-4px -4px 18px rgba(255,215,0,.04);
+    }
+    .about-card:hover{transform:perspective(900px) rotateY(0deg)}
+    .about-lotus-big{width:110px;height:110px;margin:0 auto 18px;animation:lotFloat 5s ease-in-out infinite}
+    .about-stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}
+    .stat{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px;text-align:center}
+    .stat-n{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--y);display:block}
+    .stat-l{font-size:.72rem;color:rgba(255,255,255,.55);font-weight:700;text-transform:uppercase;letter-spacing:1px}
+    .about-text h2{font-family:'Fredoka One',cursive;font-size:clamp(1.7rem,3.5vw,2.6rem);color:var(--w);margin-bottom:18px}
+    .about-text h2 .ac{color:var(--y)}
+    .about-text p{color:rgba(255,255,255,.72);font-size:.98rem;line-height:1.8;margin-bottom:14px}
+    .hi-list{display:flex;flex-direction:column;gap:12px;margin-top:22px}
+    .hi{display:flex;align-items:center;gap:14px}
+    .hi-icon{
+      width:42px;height:42px;border-radius:10px;flex-shrink:0;
+      background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.28);
+      display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+    }
+    .hi-txt{font-size:.93rem;color:rgba(255,255,255,.78);font-weight:600}
+
+    /* ════════════════════════════
+       PROGRAMS
+    ════════════════════════════ */
+    #programs{padding:100px 0}
+    .prog-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px}
+    .prog-card{
+      background:linear-gradient(135deg,rgba(255,255,255,.05) 0%,rgba(255,255,255,.02) 100%);
+      border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:32px 22px;
+      text-align:center;transition:all .4s;position:relative;overflow:hidden;cursor:default;
+    }
+    .prog-card::before{
+      content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+      background:radial-gradient(circle at center,var(--cc,rgba(255,215,0,.1)) 0%,transparent 60%);
+      opacity:0;transition:opacity .4s;
+    }
+    .prog-card:hover::before{opacity:1}
+    .prog-card:hover{
+      transform:translateY(-10px) scale(1.02);
+      border-color:var(--cc,rgba(255,215,0,.4));
+      box-shadow:0 22px 44px rgba(0,0,0,.4),0 0 32px var(--cc,rgba(255,215,0,.18));
+    }
+    .prog-icon{
+      width:76px;height:76px;border-radius:20px;margin:0 auto 18px;
+      display:flex;align-items:center;justify-content:center;font-size:2.4rem;
+      background:var(--cc,rgba(255,215,0,.13));border:2px solid var(--cc,rgba(255,215,0,.3));
+      transition:transform .4s;
+    }
+    .prog-card:hover .prog-icon{transform:rotate(10deg) scale(1.1)}
+    .prog-card h3{font-family:'Fredoka One',cursive;font-size:1.35rem;color:var(--w);margin-bottom:9px}
+    .prog-card p{color:rgba(255,255,255,.62);font-size:.87rem;line-height:1.65}
+    .prog-badge{
+      display:inline-block;margin-top:14px;padding:5px 14px;border-radius:15px;
+      font-size:.75rem;font-weight:800;
+      background:var(--cc,rgba(255,215,0,.18));color:var(--w);
+      border:1px solid var(--cc,rgba(255,215,0,.35));
+    }
+
+    /* ════════════════════════════
+       FEATURES
+    ════════════════════════════ */
+    #features{
+      padding:100px 0;
+      background:linear-gradient(180deg,transparent 0%,rgba(16,12,34,.8) 50%,transparent 100%);
+    }
+    .feat-g{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+    .feat{
+      display:flex;align-items:flex-start;gap:18px;padding:24px;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;transition:all .3s;
+    }
+    .feat:hover{background:rgba(255,215,0,.07);border-color:rgba(255,215,0,.28);transform:translateX(6px)}
+    .feat-ico{font-size:2rem;flex-shrink:0;width:52px;height:52px;display:flex;align-items:center;justify-content:center}
+    .feat h4{font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--y);margin-bottom:5px}
+    .feat p{color:rgba(255,255,255,.62);font-size:.86rem;line-height:1.6}
+
+    /* ════════════════════════════
+       DAILY SCHEDULE
+    ════════════════════════════ */
+    #schedule{padding:100px 0}
+    .sched-wrap{max-width:720px;margin:0 auto;position:relative}
+    .sched-wrap::before{
+      content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;
+      background:linear-gradient(180deg,var(--y),var(--teal),var(--g));
+      transform:translateX(-50%);
+    }
+    .tl-item{
+      display:flex;align-items:center;margin-bottom:28px;
+      opacity:0;transition:all .55s ease;
+    }
+    .tl-item:nth-child(odd){transform:translateX(-30px)}
+    .tl-item:nth-child(even){flex-direction:row-reverse;transform:translateX(30px)}
+    .tl-item.go{opacity:1;transform:translateX(0)!important}
+    .tl-box{
+      width:calc(50% - 34px);background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 18px;transition:all .3s;
+    }
+    .tl-box:hover{background:rgba(255,215,0,.07);border-color:rgba(255,215,0,.28)}
+    .tl-box h4{font-family:'Fredoka One',cursive;color:var(--y);margin-bottom:3px;font-size:1rem}
+    .tl-box p{color:rgba(255,255,255,.6);font-size:.82rem}
+    .tl-dot{
+      position:absolute;left:50%;transform:translateX(-50%);
+      width:20px;height:20px;border-radius:50%;background:var(--y);
+      border:3px solid var(--dk);box-shadow:0 0 14px rgba(255,215,0,.5);
+    }
+    .tl-time{
+      width:calc(50% - 34px);text-align:center;
+      font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--teal);
+    }
+    .tl-item:nth-child(even) .tl-time{text-align:center}
+
+    /* ════════════════════════════
+       CONTACT
+    ════════════════════════════ */
+    #contact{padding:100px 0}
+    .con-g{display:grid;grid-template-columns:1fr 1fr;gap:46px}
+    .con-info{
+      background:linear-gradient(135deg,rgba(255,215,0,.08) 0%,rgba(0,188,212,.05) 100%);
+      border:1px solid rgba(255,215,0,.2);border-radius:24px;padding:42px;
+    }
+    .con-info h3{font-family:'Fredoka One',cursive;font-size:1.7rem;color:var(--y);margin-bottom:28px}
+    .ci{display:flex;align-items:flex-start;gap:14px;margin-bottom:22px}
+    .ci-ico{
+      width:46px;height:46px;border-radius:12px;flex-shrink:0;
+      background:rgba(255,215,0,.13);border:1px solid rgba(255,215,0,.28);
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.2rem;color:var(--y);
+    }
+    .ci-txt strong{
+      display:block;color:rgba(255,255,255,.45);font-size:.7rem;
+      text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;
+    }
+    .ci-txt a,.ci-txt span{
+      color:var(--w);font-size:.97rem;font-weight:700;
+      text-decoration:none;transition:color .3s;
+    }
+    .ci-txt a:hover{color:var(--y)}
+    .con-form{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.09);border-radius:24px;padding:42px;
+    }
+    .con-form h3{font-family:'Fredoka One',cursive;font-size:1.7rem;color:var(--w);margin-bottom:28px}
+    .fg{margin-bottom:18px}
+    .fg label{
+      display:block;font-size:.78rem;font-weight:700;color:rgba(255,255,255,.55);
+      text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;
+    }
+    .fg input,.fg textarea,.fg select{
+      width:100%;padding:11px 16px;background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.13);border-radius:10px;
+      color:var(--w);font-family:'Nunito',sans-serif;font-size:.93rem;outline:none;transition:all .3s;
+    }
+    .fg input::placeholder,.fg textarea::placeholder{color:rgba(255,255,255,.28)}
+    .fg input:focus,.fg textarea:focus,.fg select:focus{
+      border-color:var(--y);background:rgba(255,215,0,.06);box-shadow:0 0 18px rgba(255,215,0,.1);
+    }
+    .fg textarea{height:100px;resize:none}
+    .fg select option{background:var(--dk)}
+    .sub-btn{
+      width:100%;padding:13px;background:var(--y);color:var(--dk);border:none;
+      border-radius:10px;font-family:'Fredoka One',cursive;font-size:1.05rem;
+      cursor:pointer;transition:all .3s;letter-spacing:1px;
+    }
+    .sub-btn:hover{background:var(--w);transform:translateY(-3px);box-shadow:0 10px 24px rgba(255,215,0,.3)}
+
+    /* ════════════════════════════
+       FOOTER
+    ════════════════════════════ */
+    #footer{
+      background:rgba(4,4,12,.95);border-top:1px solid rgba(255,215,0,.18);
+      padding:50px 0 22px;position:relative;z-index:1;
+    }
+    .foot-g{display:grid;grid-template-columns:2fr 1fr 1fr;gap:38px;margin-bottom:36px}
+    .foot-logo{font-family:'Fredoka One',cursive;font-size:1.9rem;color:var(--y);margin-bottom:8px}
+    .foot-brand p{color:rgba(255,255,255,.45);font-size:.88rem;line-height:1.7;max-width:270px}
+    .foot-col h4{font-family:'Fredoka One',cursive;color:var(--w);font-size:1.05rem;margin-bottom:13px}
+    .foot-col ul{list-style:none}
+    .foot-col ul li{margin-bottom:7px}
+    .foot-col ul li a{color:rgba(255,255,255,.45);text-decoration:none;font-size:.87rem;transition:color .3s}
+    .foot-col ul li a:hover{color:var(--y)}
+    hr.foot-div{border:none;border-top:1px solid rgba(255,255,255,.07);margin-bottom:22px}
+    .foot-bot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+    .foot-bot p{color:rgba(255,255,255,.3);font-size:.78rem}
+    .socials{display:flex;gap:10px}
+    .soc{
+      width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.18);
+      display:flex;align-items:center;justify-content:center;
+      color:rgba(255,255,255,.45);text-decoration:none;font-size:.88rem;transition:all .3s;
+    }
+    .soc:hover{border-color:var(--y);color:var(--y);background:rgba(255,215,0,.1);transform:translateY(-3px)}
+
+    /* ════════════════════════════
+       REVEAL ANIMATIONS
+    ════════════════════════════ */
+    .rev{opacity:0;transform:translateY(38px);transition:all .7s ease}
+    .rev.go{opacity:1;transform:translateY(0)}
+    .rev-l{opacity:0;transform:translateX(-48px);transition:all .7s ease}
+    .rev-l.go{opacity:1;transform:translateX(0)}
+    .rev-r{opacity:0;transform:translateX(48px);transition:all .7s ease}
+    .rev-r.go{opacity:1;transform:translateX(0)}
+
+    /* ════════════════════════════
+       RESPONSIVE
+    ════════════════════════════ */
+    @media(max-width:1024px){
+      .about-g,.con-g{grid-template-columns:1fr}
+      .feat-g{grid-template-columns:1fr}
+      .foot-g{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:768px){
+      .n-links{display:none}.burger{display:flex}
+      .wrap{padding:0 20px}
+      .char-l,.char-r{width:95px}
+      .abc-wrap{right:105px;top:80px}
+      .cube{width:42px;height:42px}
+      .cf{width:42px;height:42px;font-size:1.4rem}
+      .f-fr,.f-bk,.f-ri,.f-le,.f-tp,.f-bt{transform:none}
+      .f-fr{transform:rotateY(0deg)   translateZ(21px)}
+      .f-bk{transform:rotateY(180deg) translateZ(21px)}
+      .f-ri{transform:rotateY(90deg)  translateZ(21px)}
+      .f-le{transform:rotateY(-90deg) translateZ(21px)}
+      .f-tp{transform:rotateX(90deg)  translateZ(21px)}
+      .f-bt{transform:rotateX(-90deg) translateZ(21px)}
+      .sched-wrap::before{left:22px}
+      .tl-item,.tl-item:nth-child(even){flex-direction:column;align-items:flex-start;padding-left:50px}
+      .tl-box,.tl-time{width:100%;text-align:left}
+      .tl-dot{left:22px}
+      .foot-g{grid-template-columns:1fr}
+      .about-card{transform:none}
+      .h-main{padding:14px 16px}
+    }
+    @media(max-width:480px){
+      .char-l,.char-r{width:70px}
+      .abc-wrap{right:78px;top:76px;gap:4px}
+      .cube{width:32px;height:32px}
+      .cf{width:32px;height:32px;font-size:1.1rem}
+      .f-fr{transform:rotateY(0deg)   translateZ(16px)}
+      .f-bk{transform:rotateY(180deg) translateZ(16px)}
+      .f-ri{transform:rotateY(90deg)  translateZ(16px)}
+      .f-le{transform:rotateY(-90deg) translateZ(16px)}
+      .f-tp{transform:rotateX(90deg)  translateZ(16px)}
+      .f-bt{transform:rotateX(-90deg) translateZ(16px)}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ THREE.JS CANVAS ══════════════ -->
+<canvas id="bgc"></canvas>
+
+<!-- ══════════════ NAVIGATION ══════════════ -->
+<nav id="nav">
+  <a href="#hero" class="n-brand">
+    <!-- Inline Lotus SVG -->
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="50" cy="72" rx="12" ry="8" fill="#FFD700" opacity=".6"/>
+      <path d="M50 65 Q38 52 38 38 Q38 22 50 18 Q62 22 62 38 Q62 52 50 65Z" fill="#FFD700"/>
+      <path d="M50 60 Q30 52 24 36 Q20 22 30 18 Q40 16 46 32 Q48 42 50 60Z" fill="#FFD700" opacity=".85"/>
+      <path d="M50 60 Q70 52 76 36 Q80 22 70 18 Q60 16 54 32 Q52 42 50 60Z" fill="#FFD700" opacity=".85"/>
+      <path d="M50 55 Q22 50 16 32 Q12 16 24 14 Q36 12 42 30 Q46 42 50 55Z" fill="#FFD700" opacity=".65"/>
+      <path d="M50 55 Q78 50 84 32 Q88 16 76 14 Q64 12 58 30 Q54 42 50 55Z" fill="#FFD700" opacity=".65"/>
+    </svg>
+    <span class="n-title">LOTUS <sub>Family Group Daycare</sub></span>
+  </a>
+  <ul class="n-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#programs">Programs</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#schedule">Schedule</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="tel:9176808992" class="n-cta"><i class="fas fa-phone"></i> Call Now</a></li>
+  </ul>
+  <div class="burger" id="burger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<!-- Mobile menu -->
+<div class="mob-menu" id="mobmenu">
+  <ul>
+    <li><a href="#about" onclick="closeMob()">About</a></li>
+    <li><a href="#programs" onclick="closeMob()">Programs</a></li>
+    <li><a href="#features" onclick="closeMob()">Features</a></li>
+    <li><a href="#schedule" onclick="closeMob()">Schedule</a></li>
+    <li><a href="#contact" onclick="closeMob()">Contact</a></li>
+    <li><a href="tel:9176808992" onclick="closeMob()"><i class="fas fa-phone"></i> (917) 680-8992</a></li>
+  </ul>
+</div>
+
+<!-- ══════════════ HERO SECTION ══════════════ -->
+<section id="hero">
+  <div class="cb-bg"></div>
+  <div class="h-frame"></div>
+  <div class="h-bar-l"></div>
+  <div class="h-bar-r"></div>
+
+  <!-- ── Cat in the Hat ── -->
+  <div class="char-l">
+    <svg viewBox="0 0 220 430" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Hat top -->
+      <ellipse cx="110" cy="22" rx="52" ry="9" fill="#111"/>
+      <!-- Hat stripe 1 (white) -->
+      <rect x="59" y="22" width="102" height="22" fill="#fff"/>
+      <!-- Hat stripe 2 (red) -->
+      <rect x="59" y="44" width="102" height="20" fill="#CC0000"/>
+      <!-- Hat stripe 3 (white) -->
+      <rect x="59" y="64" width="102" height="20" fill="#fff"/>
+      <!-- Hat stripe 4 (red) -->
+      <rect x="59" y="84" width="102" height="18" fill="#CC0000"/>
+      <!-- Hat brim -->
+      <ellipse cx="110" cy="102" rx="68" ry="13" fill="#111"/>
+      <!-- Brim shine -->
+      <ellipse cx="110" cy="100" rx="55" ry="5" fill="#333" opacity=".5"/>
+      <!-- Neck fur bump -->
+      <ellipse cx="110" cy="112" rx="52" ry="8" fill="#eee"/>
+      <!-- Face -->
+      <ellipse cx="110" cy="160" rx="56" ry="62" fill="#f5f5f0"/>
+      <!-- Face shading -->
+      <ellipse cx="110" cy="180" rx="45" ry="38" fill="#eeeee8" opacity=".4"/>
+      <!-- Left ear -->
+      <ellipse cx="60" cy="115" rx="14" ry="10" fill="#ddd" transform="rotate(-20 60 115)"/>
+      <!-- Right ear -->
+      <ellipse cx="160" cy="115" rx="14" ry="10" fill="#ddd" transform="rotate(20 160 115)"/>
+      <!-- Eye whites -->
+      <ellipse cx="88" cy="148" rx="16" ry="15" fill="#fff" stroke="#111" stroke-width="3"/>
+      <ellipse cx="132" cy="148" rx="16" ry="15" fill="#fff" stroke="#111" stroke-width="3"/>
+      <!-- Pupils -->
+      <circle cx="89" cy="149" r="9" fill="#1a1a1a"/>
+      <circle cx="133" cy="149" r="9" fill="#1a1a1a"/>
+      <!-- Iris shine -->
+      <circle cx="86" cy="145" r="3.5" fill="#fff"/>
+      <circle cx="130" cy="145" r="3.5" fill="#fff"/>
+      <!-- Eyebrows -->
+      <path d="M74 134 Q88 128 100 132" stroke="#555" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M120 132 Q132 128 146 134" stroke="#555" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- Nose -->
+      <ellipse cx="110" cy="170" rx="9" ry="6" fill="#d08090"/>
+      <!-- Mouth -->
+      <path d="M90 182 Q110 200 130 182" stroke="#cc6677" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- Teeth smile -->
+      <path d="M96 185 Q110 198 124 185" fill="white" opacity=".8"/>
+      <!-- Whiskers left -->
+      <line x1="50" y1="168" x2="96" y2="171" stroke="#888" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="48" y1="177" x2="96" y2="177" stroke="#888" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="50" y1="186" x2="96" y2="182" stroke="#888" stroke-width="1.8" stroke-linecap="round"/>
+      <!-- Whiskers right -->
+      <line x1="170" y1="168" x2="124" y2="171" stroke="#888" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="172" y1="177" x2="124" y2="177" stroke="#888" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="170" y1="186" x2="124" y2="182" stroke="#888" stroke-width="1.8" stroke-linecap="round"/>
+      <!-- Bow tie -->
+      <polygon points="75,228 110,242 75,256" fill="#CC0000"/>
+      <polygon points="145,228 110,242 145,256" fill="#CC0000"/>
+      <circle cx="110" cy="242" r="9" fill="#990000"/>
+      <!-- Body white -->
+      <rect x="62" y="262" width="96" height="130" rx="12" fill="#f5f5f0" stroke="#ccc" stroke-width="2"/>
+      <!-- Vest black stripes -->
+      <rect x="62" y="262" width="30" height="130" rx="0" fill="#111" opacity=".7"/>
+      <rect x="128" y="262" width="30" height="130" rx="0" fill="#111" opacity=".7"/>
+      <!-- Left arm -->
+      <path d="M62 290 Q28 300 20 335" stroke="#f0f0e8" stroke-width="22" stroke-linecap="round" fill="none"/>
+      <!-- Left hand glove -->
+      <circle cx="19" cy="340" r="16" fill="#f0f0e8"/>
+      <!-- Right arm -->
+      <path d="M158 290 Q192 300 200 335" stroke="#f0f0e8" stroke-width="22" stroke-linecap="round" fill="none"/>
+      <!-- Right hand glove -->
+      <circle cx="201" cy="340" r="16" fill="#f0f0e8"/>
+      <!-- Legs -->
+      <rect x="75" y="385" width="26" height="40" rx="8" fill="#111"/>
+      <rect x="120" y="385" width="26" height="40" rx="8" fill="#111"/>
+      <!-- Shoes -->
+      <ellipse cx="88" cy="425" rx="20" ry="9" fill="#111"/>
+      <ellipse cx="133" cy="425" rx="20" ry="9" fill="#111"/>
+      <!-- Shoe highlights -->
+      <ellipse cx="82" cy="421" rx="8" ry="4" fill="#333" opacity=".5"/>
+      <ellipse cx="127" cy="421" rx="8" ry="4" fill="#333" opacity=".5"/>
+    </svg>
+  </div>
+
+  <!-- ── ABC Spinning 3D Blocks ── -->
+  <div class="abc-wrap">
+    <div class="cube ca">
+      <div class="cf f-fr">A</div>
+      <div class="cf f-bk">Z</div>
+      <div class="cf f-ri">A</div>
+      <div class="cf f-le">Z</div>
+      <div class="cf f-tp">A</div>
+      <div class="cf f-bt">Z</div>
+    </div>
+    <div class="cube cb">
+      <div class="cf f-fr">B</div>
+      <div class="cf f-bk">Y</div>
+      <div class="cf f-ri">B</div>
+      <div class="cf f-le">Y</div>
+      <div class="cf f-tp">B</div>
+      <div class="cf f-bt">Y</div>
+    </div>
+    <div class="cube cc">
+      <div class="cf f-fr">C</div>
+      <div class="cf f-bk">X</div>
+      <div class="cf f-ri">C</div>
+      <div class="cf f-le">X</div>
+      <div class="cf f-tp">C</div>
+      <div class="cf f-bt">X</div>
+    </div>
+  </div>
+
+  <!-- ── Main Hero Text ── -->
+  <div class="h-main">
+    <!-- Lotus icon -->
+    <div class="h-lotus-wrap">
+      <svg class="h-lotus" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="75" rx="14" ry="8" fill="#FFD700" opacity=".55"/>
+        <path d="M50 68 Q36 54 36 38 Q36 20 50 16 Q64 20 64 38 Q64 54 50 68Z" fill="#FFD700"/>
+        <path d="M50 62 Q28 54 22 36 Q18 20 30 16 Q42 14 46 34 Q48 44 50 62Z" fill="#FFD700" opacity=".88"/>
+        <path d="M50 62 Q72 54 78 36 Q82 20 70 16 Q58 14 54 34 Q52 44 50 62Z" fill="#FFD700" opacity=".88"/>
+        <path d="M50 56 Q20 50 14 30 Q10 14 24 12 Q38 10 42 32 Q46 44 50 56Z" fill="#FFD700" opacity=".65"/>
+        <path d="M50 56 Q80 50 86 30 Q90 14 76 12 Q62 10 58 32 Q54 44 50 56Z" fill="#FFD700" opacity=".65"/>
+        <circle cx="50" cy="68" r="6" fill="#FFD700"/>
+      </svg>
+    </div>
+
+    <h1 class="h-big" id="hbig">LOTUS</h1>
+    <p class="h-sub" id="hsub">Family Group Daycare</p>
+
+    <p class="h-owner" id="hown">
+      <span class="hl">"Denise Capellan"</span><br>
+      <span class="role">(Owner / Daycare Provider)</span>
+    </p>
+
+    <div class="h-phone" id="hphone">
+      <i class="fas fa-phone-alt"></i>
+      <a href="tel:9176808992">(917) 680-8992</a>
+    </div>
+
+    <div class="h-feats" id="hfeats">
+      <p><i class="fas fa-heart" style="color:#ff7070;margin-right:6px"></i>Safe and Loving Environment</p>
+      <p><i class="fas fa-child" style="color:#FFD700;margin-right:6px"></i>Ages 6 Weeks to 13 Years Old</p>
+      <p><i class="fas fa-book-open" style="color:#00BCD4;margin-right:6px"></i>Fun and Educational Daily Activities</p>
+      <p><i class="fas fa-utensils" style="color:#4CAF50;margin-right:6px"></i>Nutritional Breakfast, Lunch &amp; Snacks</p>
+    </div>
+
+    <div class="h-certs" id="hcerts">
+      <span class="cert cert-r"><i class="fas fa-building-columns"></i> New York State Licensed</span>
+      <span class="cert cert-g"><i class="fas fa-heart-pulse"></i> CPR &amp; First Aid Certified</span>
+    </div>
+
+    <p class="h-addr"><i class="fas fa-map-marker-alt" style="color:#FF6B6B;margin-right:5px"></i>2125 Holland Ave Apt. 3A, Bronx, N.Y. 10462</p>
+
+    <div class="h-btns" id="hbtns">
+      <a href="tel:9176808992" class="btn-p"><i class="fas fa-phone"></i> Call Us Now</a>
+      <a href="#contact" class="btn-s"><i class="fas fa-envelope"></i> Get Info</a>
+    </div>
+  </div>
+
+  <!-- ── Thing 1 & Thing 2 ── -->
+  <div class="char-r">
+    <svg viewBox="0 0 280 430" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Fish bowl base -->
+      <ellipse cx="140" cy="405" rx="80" ry="18" fill="#0055aa" opacity=".4"/>
+      <!-- Bowl body -->
+      <path d="M60 340 Q55 410 140 418 Q225 410 220 340 Q200 310 140 305 Q80 310 60 340Z" fill="#aaddff" opacity=".25" stroke="#88ccff" stroke-width="2"/>
+      <!-- Bowl highlight -->
+      <path d="M70 335 Q68 370 80 395" stroke="white" stroke-width="3" fill="none" opacity=".4" stroke-linecap="round"/>
+      <!-- Bowl water line -->
+      <path d="M62 340 Q140 330 218 340" stroke="#88ccff" stroke-width="1.5" fill="none" opacity=".6"/>
+      <!-- Gold fish -->
+      <ellipse cx="140" cy="380" rx="32" ry="18" fill="#FFA500"/>
+      <path d="M172 380 Q190 368 195 380 Q190 392 172 380Z" fill="#FF6600"/>
+      <circle cx="128" cy="376" r="4" fill="#111"/>
+      <circle cx="127" cy="375" r="1.5" fill="#fff"/>
+      <!-- Fish fin top -->
+      <path d="M140 362 Q148 352 155 362" fill="#FF8C00" opacity=".8"/>
+      <!-- Fish scales -->
+      <path d="M130 375 Q140 370 150 375" stroke="#FF6600" stroke-width="1" fill="none" opacity=".6"/>
+      <path d="M125 380 Q140 376 155 380" stroke="#FF6600" stroke-width="1" fill="none" opacity=".6"/>
+
+      <!-- ── THING 2 (left) ── -->
+      <!-- Thing 2 body/suit -->
+      <rect x="55" y="240" width="75" height="100" rx="14" fill="#CC0000"/>
+      <!-- Thing 2 white circle -->
+      <circle cx="92" cy="285" r="26" fill="white"/>
+      <text x="92" y="281" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="11" fill="#CC0000" font-weight="bold">THING</text>
+      <text x="92" y="296" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="14" fill="#CC0000" font-weight="bold">2</text>
+      <!-- Thing 2 arms -->
+      <path d="M55 265 Q32 270 28 295" stroke="#CC0000" stroke-width="16" stroke-linecap="round" fill="none"/>
+      <path d="M130 265 Q150 270 152 295" stroke="#CC0000" stroke-width="16" stroke-linecap="round" fill="none"/>
+      <!-- Thing 2 hands -->
+      <circle cx="27" cy="300" r="13" fill="#f5f0e8"/>
+      <circle cx="153" cy="300" r="13" fill="#f5f0e8"/>
+      <!-- Thing 2 head -->
+      <ellipse cx="92" cy="225" rx="36" ry="38" fill="#f5f0e8"/>
+      <!-- Thing 2 BLUE hair (crazy) -->
+      <ellipse cx="92" cy="196" rx="35" ry="30" fill="#1565C0"/>
+      <!-- Hair tufts -->
+      <circle cx="72" cy="185" r="14" fill="#1565C0"/>
+      <circle cx="112" cy="183" r="14" fill="#1565C0"/>
+      <circle cx="85" cy="178" r="12" fill="#1976D2"/>
+      <circle cx="100" cy="176" r="12" fill="#1976D2"/>
+      <circle cx="60" cy="193" r="10" fill="#1565C0"/>
+      <circle cx="124" cy="192" r="10" fill="#1565C0"/>
+      <circle cx="75" cy="171" r="9" fill="#1976D2"/>
+      <circle cx="110" cy="170" r="9" fill="#1976D2"/>
+      <!-- Thing 2 eyes -->
+      <circle cx="80" cy="220" r="9" fill="#fff" stroke="#333" stroke-width="2"/>
+      <circle cx="104" cy="220" r="9" fill="#fff" stroke="#333" stroke-width="2"/>
+      <circle cx="82" cy="221" r="5" fill="#111"/>
+      <circle cx="106" cy="221" r="5" fill="#111"/>
+      <circle cx="80" cy="218" r="2" fill="#fff"/>
+      <circle cx="104" cy="218" r="2" fill="#fff"/>
+      <!-- Thing 2 smile -->
+      <path d="M78 234 Q92 248 106 234" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- Thing 2 legs -->
+      <rect x="68" y="334" width="20" height="35" rx="6" fill="#CC0000"/>
+      <rect x="102" y="334" width="20" height="35" rx="6" fill="#CC0000"/>
+      <ellipse cx="78" cy="370" rx="16" ry="7" fill="#111"/>
+      <ellipse cx="112" cy="370" rx="16" ry="7" fill="#111"/>
+
+      <!-- ── THING 1 (right) ── -->
+      <!-- Thing 1 body/suit -->
+      <rect x="150" y="235" width="75" height="100" rx="14" fill="#CC0000"/>
+      <!-- Thing 1 white circle -->
+      <circle cx="187" cy="280" r="26" fill="white"/>
+      <text x="187" y="276" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="11" fill="#CC0000" font-weight="bold">THING</text>
+      <text x="187" y="291" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="14" fill="#CC0000" font-weight="bold">1</text>
+      <!-- Thing 1 arms -->
+      <path d="M150 260 Q130 268 125 292" stroke="#CC0000" stroke-width="16" stroke-linecap="round" fill="none"/>
+      <path d="M225 260 Q248 268 252 292" stroke="#CC0000" stroke-width="16" stroke-linecap="round" fill="none"/>
+      <!-- Thing 1 hands -->
+      <circle cx="124" cy="297" r="13" fill="#f5f0e8"/>
+      <circle cx="253" cy="297" r="13" fill="#f5f0e8"/>
+      <!-- Thing 1 head -->
+      <ellipse cx="187" cy="218" rx="36" ry="38" fill="#f5f0e8"/>
+      <!-- Thing 1 BLUE hair (crazy) -->
+      <ellipse cx="187" cy="189" rx="35" ry="30" fill="#1565C0"/>
+      <!-- Hair tufts Thing 1 -->
+      <circle cx="167" cy="178" r="14" fill="#1565C0"/>
+      <circle cx="207" cy="176" r="14" fill="#1565C0"/>
+      <circle cx="180" cy="171" r="12" fill="#1976D2"/>
+      <circle cx="195" cy="169" r="12" fill="#1976D2"/>
+      <circle cx="155" cy="186" r="10" fill="#1565C0"/>
+      <circle cx="219" cy="185" r="10" fill="#1565C0"/>
+      <circle cx="170" cy="164" r="9" fill="#1976D2"/>
+      <circle cx="205" cy="163" r="9" fill="#1976D2"/>
+      <!-- Thing 1 eyes -->
+      <circle cx="175" cy="213" r="9" fill="#fff" stroke="#333" stroke-width="2"/>
+      <circle cx="199" cy="213" r="9" fill="#fff" stroke="#333" stroke-width="2"/>
+      <circle cx="177" cy="214" r="5" fill="#111"/>
+      <circle cx="201" cy="214" r="5" fill="#111"/>
+      <circle cx="175" cy="211" r="2" fill="#fff"/>
+      <circle cx="199" cy="211" r="2" fill="#fff"/>
+      <!-- Thing 1 smile / excited open mouth -->
+      <path d="M173 227 Q187 242 201 227" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- Thing 1 legs -->
+      <rect x="162" y="328" width="20" height="35" rx="6" fill="#CC0000"/>
+      <rect x="196" y="328" width="20" height="35" rx="6" fill="#CC0000"/>
+      <ellipse cx="172" cy="364" rx="16" ry="7" fill="#111"/>
+      <ellipse cx="206" cy="364" rx="16" ry="7" fill="#111"/>
+
+      <!-- Connecting hands (holding each other) -->
+      <path d="M152 300 Q140 302 127 298" stroke="#CC0000" stroke-width="10" stroke-linecap="round" fill="none"/>
+    </svg>
+  </div>
+
+  <div class="scroll-ind"><span></span></div>
+</section>
+
+<!-- ══════════════ ABOUT ══════════════ -->
+<section id="about">
+  <div class="wrap">
+    <div class="about-g">
+      <div class="about-card rev-l">
+        <svg class="about-lotus-big" viewBox="0 0 100 100" fill="none">
+          <ellipse cx="50" cy="75" rx="14" ry="8" fill="#FFD700" opacity=".55"/>
+          <path d="M50 68 Q36 54 36 38 Q36 20 50 16 Q64 20 64 38 Q64 54 50 68Z" fill="#FFD700"/>
+          <path d="M50 62 Q28 54 22 36 Q18 20 30 16 Q42 14 46 34 Q48 44 50 62Z" fill="#FFD700" opacity=".88"/>
+          <path d="M50 62 Q72 54 78 36 Q82 20 70 16 Q58 14 54 34 Q52 44 50 62Z" fill="#FFD700" opacity=".88"/>
+          <path d="M50 56 Q20 50 14 30 Q10 14 24 12 Q38 10 42 32 Q46 44 50 56Z" fill="#FFD700" opacity=".65"/>
+          <path d="M50 56 Q80 50 86 30 Q90 14 76 12 Q62 10 58 32 Q54 44 50 56Z" fill="#FFD700" opacity=".65"/>
+          <circle cx="50" cy="68" r="7" fill="#FFD700"/>
+        </svg>
+        <p style="font-family:'Caveat',cursive;font-size:1.1rem;color:rgba(255,255,255,.75);line-height:1.7">
+          A safe, nurturing, and joyful place where children grow, learn, and thrive every single day.
+        </p>
+        <div class="about-stats">
+          <div class="stat"><span class="stat-n">15+</span><span class="stat-l">Years Experience</span></div>
+          <div class="stat"><span class="stat-n">6wk</span><span class="stat-l">Youngest Age</span></div>
+          <div class="stat"><span class="stat-n">13yr</span><span class="stat-l">Oldest Age</span></div>
+          <div class="stat"><span class="stat-n">NYS</span><span class="stat-l">Licensed</span></div>
+        </div>
+      </div>
+      <div class="about-text rev-r">
+        <div class="s-tag">Our Story</div>
+        <h2>Welcome to <span class="ac">Lotus</span> Family</h2>
+        <p>
+          At Lotus Family Group Daycare, we believe every child deserves a warm, loving, and stimulating environment where they can flourish. Under the care of <strong style="color:#FFD700">Denise Capellan</strong>, we create a home-away-from-home experience for children ages 6 weeks to 13 years old.
+        </p>
+        <p>
+          Our program blends play-based learning with structured educational activities, ensuring that every child develops socially, emotionally, and academically at their own unique pace.
+        </p>
+        <div class="hi-list">
+          <div class="hi"><div class="hi-icon">🏛️</div><span class="hi-txt">New York State Licensed Daycare Provider</span></div>
+          <div class="hi"><div class="hi-icon">❤️</div><span class="hi-txt">CPR &amp; First Aid Certified Staff</span></div>
+          <div class="hi"><div class="hi-icon">🌸</div><span class="hi-txt">Safe, Loving &amp; Stimulating Environment</span></div>
+          <div class="hi"><div class="hi-icon">🍎</div><span class="hi-txt">Nutritional Meals &amp; Snacks Provided</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ PROGRAMS ══════════════ -->
+<section id="programs">
+  <div class="wrap">
+    <div class="s-head rev">
+      <div class="s-tag">What We Offer</div>
+      <h2 class="s-title">Our <span class="ac">Programs</span></h2>
+      <p class="s-desc">Carefully designed developmental programs for every stage of childhood growth.</p>
+    </div>
+    <div class="prog-g">
+      <div class="prog-card rev" style="--cc:rgba(255,160,0,.25);transition-delay:.05s">
+        <div class="prog-icon">👶</div>
+        <h3>Infant Care</h3>
+        <p>Gentle, attentive care for your smallest ones. Safe routines, sensory play, and constant nurturing.</p>
+        <span class="prog-badge">6 Weeks – 12 Months</span>
+      </div>
+      <div class="prog-card rev" style="--cc:rgba(0,188,212,.25);transition-delay:.1s">
+        <div class="prog-icon">🧸</div>
+        <h3>Toddler Program</h3>
+        <p>Exploration, language development, and social skills through guided play and creative activities.</p>
+        <span class="prog-badge">1 – 3 Years</span>
+      </div>
+      <div class="prog-card rev" style="--cc:rgba(76,175,80,.25);transition-delay:.15s">
+        <div class="prog-icon">🎨</div>
+        <h3>Pre-K Enrichment</h3>
+        <p>School readiness with phonics, numbers, arts &amp; crafts, music, and structured learning time.</p>
+        <span class="prog-badge">3 – 5 Years</span>
+      </div>
+      <div class="prog-card rev" style="--cc:rgba(156,39,176,.25);transition-delay:.2s">
+        <div class="prog-icon">📚</div>
+        <h3>School Age Care</h3>
+        <p>After-school homework help, enrichment activities, and supervised recreation for older kids.</p>
+        <span class="prog-badge">6 – 13 Years</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ FEATURES ══════════════ -->
+<section id="features">
+  <div class="wrap">
+    <div class="s-head rev">
+      <div class="s-tag">Why Choose Us</div>
+      <h2 class="s-title">Everything Your Child <span class="ac">Needs</span></h2>
+      <p class="s-desc">We go above and beyond to provide a complete, enriching experience for every child in our care.</p>
+    </div>
+    <div class="feat-g">
+      <div class="feat rev" style="transition-delay:.05s">
+        <div class="feat-ico">🛡️</div>
+        <div>
+          <h4>Safe Environment</h4>
+          <p>Fully childproofed, licensed facility with strict safety protocols. Peace of mind for every parent.</p>
+        </div>
+      </div>
+      <div class="feat rev" style="transition-delay:.1s">
+        <div class="feat-ico">🌱</div>
+        <div>
+          <h4>Educational Activities</h4>
+          <p>Daily structured activities promoting cognitive, social, and emotional development through fun.</p>
+        </div>
+      </div>
+      <div class="feat rev" style="transition-delay:.15s">
+        <div class="feat-ico">🍽️</div>
+        <div>
+          <h4>Nutritional Meals</h4>
+          <p>Healthy, balanced breakfast, lunch, and snacks served daily to fuel growing minds and bodies.</p>
+        </div>
+      </div>
+      <div class="feat rev" style="transition-delay:.2s">
+        <div class="feat-ico">❤️</div>
+        <div>
+          <h4>Loving Caregivers</h4>
+          <p>Our team treats every child like family — warm, patient, and deeply committed to their wellbeing.</p>
+        </div>
+      </div>
+      <div class="feat rev" style="transition-delay:.25s">
+        <div class="feat-ico">🎭</div>
+        <div>
+          <h4>Arts &amp; Creativity</h4>
+          <p>Music, drawing, storytelling, and imaginative play that sparks creativity and self-expression.</p>
+        </div>
+      </div>
+      <div class="feat rev" style="transition-delay:.3s">
+        <div class="feat-ico">🏫</div>
+        <div>
+          <h4>School Readiness</h4>
+          <p>Pre-literacy, pre-math, and social skills that prepare children for a smooth transition to school.</p>
+        </div>
+      </div>
+      <div class="feat rev" style="transition-delay:.35s">
+        <div class="feat-ico">🚌</div>
+        <div>
+          <h4>Flexible Hours</h4>
+          <p>Accommodating schedules designed to support working families with dependable daily care.</p>
+        </div>
+      </div>
+      <div class="feat rev" style="transition-delay:.4s">
+        <div class="feat-ico">🏥</div>
+        <div>
+          <h4>CPR &amp; First Aid</h4>
+          <p>All caregivers are CPR and First Aid certified, ensuring your child's safety at every moment.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ SCHEDULE ══════════════ -->
+<section id="schedule">
+  <div class="wrap">
+    <div class="s-head rev">
+      <div class="s-tag">A Typical Day</div>
+      <h2 class="s-title">Daily <span class="ac">Schedule</span></h2>
+      <p class="s-desc">A structured, fun-filled day designed to balance learning, play, nutrition, and rest.</p>
+    </div>
+    <div class="sched-wrap">
+      <div class="tl-item">
+        <div class="tl-time">7:00 – 8:30 AM</div>
+        <div class="tl-dot"></div>
+        <div class="tl-box">
+          <h4>🌅 Arrival &amp; Free Play</h4>
+          <p>Morning welcome, greetings, and free-choice exploration time</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-box">
+          <h4>🍳 Nutritional Breakfast</h4>
+          <p>Healthy, balanced morning meal to fuel the day ahead</p>
+        </div>
+        <div class="tl-dot"></div>
+        <div class="tl-time">8:30 – 9:15 AM</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">9:15 – 10:30 AM</div>
+        <div class="tl-dot"></div>
+        <div class="tl-box">
+          <h4>📖 Circle Time &amp; Learning</h4>
+          <p>Stories, letters, numbers, songs, and structured educational activities</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-box">
+          <h4>🎨 Arts &amp; Crafts</h4>
+          <p>Creative projects that develop fine motor skills and self-expression</p>
+        </div>
+        <div class="tl-dot"></div>
+        <div class="tl-time">10:30 – 11:30 AM</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">11:30 AM – 12:30 PM</div>
+        <div class="tl-dot"></div>
+        <div class="tl-box">
+          <h4>🍽️ Lunch Time</h4>
+          <p>Nutritional hot lunch with a focus on healthy eating habits</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-box">
+          <h4>😴 Nap / Quiet Time</h4>
+          <p>Rest and relaxation for younger children; quiet reading for older kids</p>
+        </div>
+        <div class="tl-dot"></div>
+        <div class="tl-time">12:30 – 2:30 PM</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">2:30 – 3:30 PM</div>
+        <div class="tl-dot"></div>
+        <div class="tl-box">
+          <h4>🍎 Afternoon Snack</h4>
+          <p>Healthy snack to recharge for afternoon activities</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-box">
+          <h4>🏃 Outdoor / Active Play</h4>
+          <p>Physical activity, outdoor exploration, and group games</p>
+        </div>
+        <div class="tl-dot"></div>
+        <div class="tl-time">3:30 – 5:00 PM</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">5:00 – 6:00 PM</div>
+        <div class="tl-dot"></div>
+        <div class="tl-box">
+          <h4>👨‍👩‍👧 Pick-Up &amp; Wind Down</h4>
+          <p>Parent updates, end-of-day activities, and warm goodbyes</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ CONTACT ══════════════ -->
+<section id="contact">
+  <div class="wrap">
+    <div class="s-head rev">
+      <div class="s-tag">Reach Us</div>
+      <h2 class="s-title">Get In <span class="ac">Touch</span></h2>
+      <p class="s-desc">Ready to give your child the best start? We'd love to hear from you!</p>
+    </div>
+    <div class="con-g">
+      <div class="con-info rev-l">
+        <h3><i class="fas fa-map-marker-alt"></i> Contact Info</h3>
+        <div class="ci">
+          <div class="ci-ico"><i class="fas fa-user"></i></div>
+          <div class="ci-txt">
+            <strong>Provider</strong>
+            <span>Denise Capellan</span>
+          </div>
+        </div>
+        <div class="ci">
+          <div class="ci-ico"><i class="fas fa-phone"></i></div>
+          <div class="ci-txt">
+            <strong>Phone</strong>
+            <a href="tel:9176808992">(917) 680-8992</a>
+          </div>
+        </div>
+        <div class="ci">
+          <div class="ci-ico"><i class="fas fa-envelope"></i></div>
+          <div class="ci-txt">
+            <strong>Email</strong>
+            <a href="mailto:lotusgroupdaycare@gmail.com">lotusgroupdaycare@gmail.com</a>
+          </div>
+        </div>
+        <div class="ci">
+          <div class="ci-ico"><i class="fas fa-map-marker-alt"></i></div>
+          <div class="ci-txt">
+            <strong>Address</strong>
+            <span>2125 Holland Ave Apt. 3A<br>Bronx, N.Y. 10462</span>
+          </div>
+        </div>
+        <div class="ci">
+          <div class="ci-ico"><i class="fas fa-clock"></i></div>
+          <div class="ci-txt">
+            <strong>Hours</strong>
+            <span>Mon–Fri: 7:00 AM – 6:00 PM</span>
+          </div>
+        </div>
+        <div style="margin-top:28px;padding:18px;background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.2);border-radius:14px">
+          <p style="color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.7">
+            <i class="fas fa-star" style="color:#FFD700;margin-right:6px"></i>
+            <strong style="color:#FFD700">New York State Licensed</strong> and
+            <strong style="color:#00E676">CPR &amp; First Aid Certified</strong>.
+            Your child's safety and happiness is our highest priority.
+          </p>
+        </div>
+      </div>
+      <div class="con-form rev-r">
+        <h3><i class="fas fa-paper-plane"></i> Send a Message</h3>
+        <form id="cform" onsubmit="handleForm(event)">
+          <div class="fg">
+            <label>Parent / Guardian Name</label>
+            <input type="text" placeholder="Your full name" required />
+          </div>
+          <div class="fg">
+            <label>Phone Number</label>
+            <input type="tel" placeholder="(xxx) xxx-xxxx" required />
+          </div>
+          <div class="fg">
+            <label>Email Address</label>
+            <input type="email" placeholder="your@email.com" />
+          </div>
+          <div class="fg">
+            <label>Child's Age</label>
+            <select required>
+              <option value="" disabled selected>Select age range</option>
+              <option>6 Weeks – 12 Months</option>
+              <option>1 – 3 Years</option>
+              <option>3 – 5 Years</option>
+              <option>6 – 13 Years</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Message</label>
+            <textarea placeholder="Tell us about your child and any questions you may have..."></textarea>
+          </div>
+          <button type="submit" class="sub-btn"><i class="fas fa-paper-plane"></i> Send Message</button>
+        </form>
+        <div id="form-success" style="display:none;margin-top:18px;padding:16px;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.3);border-radius:12px;color:#00E676;font-weight:700;text-align:center">
+          <i class="fas fa-check-circle"></i> Thank you! We'll be in touch shortly.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer id="footer">
+  <div class="wrap">
+    <div class="foot-g">
+      <div class="foot-brand">
+        <div class="foot-logo">🌸 LOTUS</div>
+        <p>Lotus Family Group Daycare provides a safe, loving, and educational environment for children ages 6 weeks to 13 years in the Bronx, NY.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#about">About Us</a></li>
+          <li><a href="#programs">Programs</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#schedule">Daily Schedule</a></li>
+          <li><a href="#contact">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:9176808992">(917) 680-8992</a></li>
+          <li><a href="mailto:lotusgroupdaycare@gmail.com">lotusgroupdaycare@gmail.com</a></li>
+          <li><a href="#">2125 Holland Ave Apt. 3A</a></li>
+          <li><a href="#">Bronx, N.Y. 10462</a></li>
+          <li><a href="#">Mon–Fri: 7AM – 6PM</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="foot-div" />
+    <div class="foot-bot">
+      <p>&copy; 2025 Lotus Family Group Daycare — Denise Capellan. All rights reserved.</p>
+      <div class="socials">
+        <a href="#" class="soc" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="soc" title="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="tel:9176808992" class="soc" title="Phone"><i class="fas fa-phone"></i></a>
+        <a href="mailto:lotusgroupdaycare@gmail.com" class="soc" title="Email"><i class="fas fa-envelope"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
+<script>
+/* ══ GSAP register ══ */
+gsap.registerPlugin(ScrollTrigger);
+
+/* ══ THREE.JS BACKGROUND ══ */
+(function(){
+  const canvas = document.getElementById('bgc');
+  const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 200);
+  camera.position.set(0, 0, 30);
+
+  /* lighting */
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+  const dLight = new THREE.DirectionalLight(0xFFD700, 1.2);
+  dLight.position.set(5, 8, 10);
+  scene.add(dLight);
+  const pLight = new THREE.PointLight(0x00BCD4, 0.8, 60);
+  pLight.position.set(-15, 5, 10);
+  scene.add(pLight);
+  const pLight2 = new THREE.PointLight(0xFF6B6B, 0.6, 60);
+  pLight2.position.set(15, -5, 10);
+  scene.add(pLight2);
+
+  /* ── STARS (particles) ── */
+  const starGeo = new THREE.BufferGeometry();
+  const starCount = 1200;
+  const positions = new Float32Array(starCount * 3);
+  for(let i=0;i<starCount*3;i++) positions[i]=(Math.random()-0.5)*200;
+  starGeo.setAttribute('position', new THREE.BufferAttribute(positions,3));
+  const stars = new THREE.Points(
+    starGeo,
+    new THREE.PointsMaterial({color:0xffffff, size:.22, transparent:true, opacity:.7})
+  );
+  scene.add(stars);
+
+  /* ── 3D LETTER BLOCK HELPER ── */
+  function makeBlockTexture(letter, bgColor) {
+    const c = document.createElement('canvas');
+    c.width = 256; c.height = 256;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0,0,256,256);
+    ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+    ctx.lineWidth = 10;
+    ctx.strokeRect(8,8,240,240);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 130px Fredoka One, Arial Black';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur = 8;
+    ctx.fillText(letter,128,135);
+    return new THREE.CanvasTexture(c);
+  }
+
+  const letters = ['A','B','C','D','E','F','1','2','3','★','♪','?'];
+  const blockColors = ['#CC0000','#1565C0','#2E7D32','#6A1B9A','#E65100','#00838F','#880E4F','#37474F'];
+  const blocks = [];
+
+  for(let i=0; i<18; i++){
+    const letter = letters[i % letters.length];
+    const color  = blockColors[i % blockColors.length];
+    const tex = makeBlockTexture(letter, color);
+    const mats = Array(6).fill(null).map((_,fi)=>{
+      const lt = makeBlockTexture(letters[(i+fi)%letters.length], blockColors[(i+fi)%blockColors.length]);
+      return new THREE.MeshLambertMaterial({map:lt});
+    });
+    mats[0] = new THREE.MeshLambertMaterial({map:tex});
+
+    const size = 0.9 + Math.random()*0.7;
+    const geo = new THREE.BoxGeometry(size,size,size);
+    const mesh = new THREE.Mesh(geo, mats);
+    mesh.position.set(
+      (Math.random()-0.5)*50,
+      (Math.random()-0.5)*36,
+      (Math.random()-0.5)*20 - 8
+    );
+    mesh.rotation.set(
+      Math.random()*Math.PI*2,
+      Math.random()*Math.PI*2,
+      Math.random()*Math.PI*2
+    );
+    mesh.userData = {
+      rx: (Math.random()-.5)*0.012,
+      ry: (Math.random()-.5)*0.016,
+      rz: (Math.random()-.5)*0.01,
+      floatSpeed: 0.4 + Math.random()*0.6,
+      floatAmp: 0.05 + Math.random()*0.08,
+      phase: Math.random()*Math.PI*2
+    };
+    scene.add(mesh);
+    blocks.push(mesh);
+  }
+
+  /* ── floating spheres (bokeh) ── */
+  const bokeh = [];
+  for(let i=0;i<12;i++){
+    const r = 0.3+Math.random()*0.5;
+    const m = new THREE.Mesh(
+      new THREE.SphereGeometry(r,16,16),
+      new THREE.MeshPhongMaterial({
+        color: [0xFFD700,0x00BCD4,0xFF6B6B,0x4CAF50][i%4],
+        transparent:true, opacity:0.15+Math.random()*0.15,
+        shininess:80
+      })
+    );
+    m.position.set((Math.random()-.5)*60,(Math.random()-.5)*40,(Math.random()-.5)*15-5);
+    m.userData={phase:Math.random()*Math.PI*2,spd:0.3+Math.random()*0.5,amp:0.08+Math.random()*0.12};
+    scene.add(m);
+    bokeh.push(m);
+  }
+
+  /* ── mouse parallax ── */
+  let mx=0, my=0;
+  document.addEventListener('mousemove',e=>{
+    mx = (e.clientX/window.innerWidth - 0.5)*0.6;
+    my = (e.clientY/window.innerHeight - 0.5)*0.4;
+  });
+
+  let t=0;
+  function animate(){
+    requestAnimationFrame(animate);
+    t += 0.016;
+
+    stars.rotation.y += 0.0003;
+    stars.rotation.x += 0.0001;
+
+    blocks.forEach(b=>{
+      b.rotation.x += b.userData.rx;
+      b.rotation.y += b.userData.ry;
+      b.rotation.z += b.userData.rz;
+      b.position.y += Math.sin(t*b.userData.floatSpeed + b.userData.phase) * b.userData.floatAmp;
+    });
+
+    bokeh.forEach(b=>{
+      b.position.y += Math.sin(t*b.userData.spd + b.userData.phase) * b.userData.amp;
+      b.position.x += Math.cos(t*b.userData.spd*.7 + b.userData.phase) * b.userData.amp*.5;
+    });
+
+    camera.position.x += (mx*4 - camera.position.x)*0.04;
+    camera.position.y += (-my*3 - camera.position.y)*0.04;
+    camera.lookAt(scene.position);
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize',()=>{
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+  });
+})();
+
+/* ══ NAV SCROLL ══ */
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('stuck', window.scrollY>50);
+});
+
+/* ══ MOBILE MENU ══ */
+document.getElementById('burger').addEventListener('click',()=>{
+  document.getElementById('mobmenu').classList.toggle('open');
+});
+function closeMob(){ document.getElementById('mobmenu').classList.remove('open'); }
+
+/* ══ HERO ENTRANCE ══ */
+window.addEventListener('load',()=>{
+  setTimeout(()=>{ document.getElementById('hbig').classList.add('go'); }, 100);
+  setTimeout(()=>{ document.getElementById('hsub').classList.add('go'); }, 400);
+  setTimeout(()=>{ document.getElementById('hown').classList.add('go'); }, 600);
+  setTimeout(()=>{ document.getElementById('hphone').classList.add('go'); }, 750);
+  setTimeout(()=>{ document.getElementById('hfeats').classList.add('go'); }, 900);
+  setTimeout(()=>{ document.getElementById('hcerts').classList.add('go'); }, 1050);
+  setTimeout(()=>{ document.getElementById('hbtns').classList.add('go'); }, 1200);
+});
+
+/* ══ SCROLL REVEAL (IntersectionObserver) ══ */
+const revOpts = { threshold: 0.12 };
+const revObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add('go'); revObserver.unobserve(e.target); }
+  });
+}, revOpts);
+document.querySelectorAll('.rev,.rev-l,.rev-r').forEach(el=>revObserver.observe(el));
+
+/* ══ TIMELINE ITEMS ══ */
+const tlObs = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add('go'); tlObs.unobserve(e.target); }
+  });
+}, {threshold:0.25});
+document.querySelectorAll('.tl-item').forEach((el,i)=>{
+  el.style.transitionDelay = (i*0.08)+'s';
+  tlObs.observe(el);
+});
+
+/* ══ FORM HANDLER ══ */
+function handleForm(e){
+  e.preventDefault();
+  document.getElementById('cform').style.display='none';
+  document.getElementById('form-success').style.display='block';
+}
+
+/* ══ GSAP PARALLAX HERO CHARS ══ */
+gsap.to('.char-l',{
+  y: -60, ease:'none',
+  scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}
+});
+gsap.to('.char-r',{
+  y: -40, ease:'none',
+  scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}
+});
+gsap.to('.abc-wrap',{
+  y: -80, ease:'none',
+  scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}
+});
+gsap.to('.h-main',{
+  y: -30, ease:'none',
+  scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}
+});
+
+/* ══ PROGRAM CARD 3D tilt ══ */
+document.querySelectorAll('.prog-card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left - r.width/2) / (r.width/2);
+    const y = (e.clientY - r.top  - r.height/2)/ (r.height/2);
+    card.style.transform = `translateY(-10px) scale(1.02) rotateX(${-y*8}deg) rotateY(${x*8}deg)`;
+    card.style.transition = 'box-shadow .3s';
+  });
+  card.addEventListener('mouseleave',()=>{
+    card.style.transform = '';
+    card.style.transition = 'all .5s ease';
+  });
+});
+
+/* ══ Cursor glow effect ══ */
+(function(){
+  const glow = document.createElement('div');
+  Object.assign(glow.style,{
+    position:'fixed',pointerEvents:'none',zIndex:'9999',
+    width:'300px',height:'300px',borderRadius:'50%',
+    background:'radial-gradient(circle,rgba(255,215,0,.06) 0%,transparent 70%)',
+    transform:'translate(-50%,-50%)',transition:'opacity .3s',
+  });
+  document.body.appendChild(glow);
+  document.addEventListener('mousemove',e=>{
+    glow.style.left=e.clientX+'px';
+    glow.style.top=e.clientY+'px';
+  });
+})();
+</script>
+</body>
+</html>
